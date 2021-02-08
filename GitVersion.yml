@@ -1,6 +1,6 @@
 branches:
   master:
-    regex: ^master$
+    regex: ^main$
     mode: ContinuousDeployment
     tag: ""
   feature:
