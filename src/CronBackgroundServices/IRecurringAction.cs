@@ -25,7 +25,7 @@ namespace CronBackgroundServices
 
         /// <summary>
         /// The TimeZone in which the Cron expression should be based on.
-        /// Defaults to Europe/Oslo.
+        /// Defaults to UTC.
         /// 
         /// NB! Platform specific, so make sure it returns a valid timezoneId for the platform you're targeting!
         /// </summary>

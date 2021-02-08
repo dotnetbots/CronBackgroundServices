@@ -7,6 +7,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F370DEF6-286
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronBackgroundServices", "src\CronBackgroundServices\CronBackgroundServices.csproj", "{2EB6C258-40DC-4057-B77D-1AA859B802EC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{7BC5B349-FBEF-48DF-BE73-2EC096F73A02}"
+ProjectSection(SolutionItems) = preProject
+	.github\FUNDING.yml = .github\FUNDING.yml
+	.github\workflows\Release.yml = .github\workflows\Release.yml
+	.github\workflows\PreRelease.yml = .github\workflows\PreRelease.yml
+	.github\workflows\CI.yml = .github\workflows\CI.yml
+	.editorconfig = .editorconfig
+	GitVersion.yml = GitVersion.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
