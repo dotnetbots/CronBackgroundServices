@@ -11,7 +11,7 @@ namespace CronBackgroundServices
         /// </summary>
         /// <returns></returns>
         Task Process(CancellationToken stoppingToken);
-        
+
         /// <summary>
         /// The cron expression (including seconds) as defined by the Cronos library:
         /// See https://github.com/HangfireIO/Cronos#cron-format
@@ -22,7 +22,7 @@ namespace CronBackgroundServices
         /// </summary>
         /// <returns>A valid Cron Expression</returns>
         string Cron { get; }
-        
+
         /// <summary>
         /// The TimeZone in which the Cron expression should be based on.
         /// Defaults to Europe/Oslo.
@@ -32,7 +32,7 @@ namespace CronBackgroundServices
         /// <returns>timezoneId</returns>
         string GetTimeZoneId()
         {
-            return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Europe/Oslo" : "Central European Standard Time";
+            return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Europe/London" : "GMT Standard Time";
         }
     }
 }
