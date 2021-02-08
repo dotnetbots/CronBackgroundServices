@@ -24,5 +24,18 @@ services.AddRecurringActions()
 .Build();
 ```
 
+Each job has to implement `IRecurringAction`. If you want a different TimeZone than UTC you have to override the default interface method `GetTimeZoneId`.
 
+```csharp
+public interface IRecurringAction
+{
+    
+    Task Process(CancellationToken stoppingToken);
+    string Cron { get; }
+    string GetTimeZoneId()
+    {
+        return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Europe/London" : "GMT Standard Time";
+    }
+}
+```
 
