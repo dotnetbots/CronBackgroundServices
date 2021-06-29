@@ -36,7 +36,7 @@ namespace CronBackgroundServices
                 {
                     next = _timing.GetNextOccurenceInRelativeTime(Cron);
                     var uText = _timing.Get10NextOccurrences(Cron);
-                    var logText = $"Ten next occurrences :\n{uText.Aggregate((x,y) => x + "\n" + y)}";
+                    var logText = $"Ten next occurrences :\n{uText.Aggregate((x, y) => x + "\n" + y)}";
                     _logger.LogTrace(logText);
                 }
 
@@ -50,7 +50,7 @@ namespace CronBackgroundServices
                     {
                         _logger.LogError(e, e.Message);
                     }
-                    
+
                     next = _timing.GetNextOccurenceInRelativeTime(Cron);
                     _logger.LogTrace($"Next at {next.Value.DateTime.ToLongDateString()} {next.Value.DateTime.ToLongTimeString()}");
                 }
@@ -59,7 +59,7 @@ namespace CronBackgroundServices
                     // needed for graceful shutdown for some reason.
                     // 100ms chosen so it doesn't affect calculating the next
                     // cron occurence (lowest possible: every second)
-                    await Task.Delay(100, stoppingToken);
+                    await Task.Delay(100);
                 }
 
             } while (!stoppingToken.IsCancellationRequested);

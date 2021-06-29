@@ -5,7 +5,7 @@ using CronBackgroundServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-        
+
 Host.CreateDefaultBuilder(args)
     .ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Trace))
     .ConfigureServices((_, services) => services.AddRecurringActions().AddRecurrer<MyCustomRecurringJob>().Build())
@@ -14,12 +14,18 @@ Host.CreateDefaultBuilder(args)
 
 public class MyCustomRecurringJob : IRecurringAction
 {
+    private readonly ILogger<MyCustomRecurringJob> _logger;
+
+    public MyCustomRecurringJob(ILogger<MyCustomRecurringJob> logger)
+    {
+        _logger = logger;
+    }
     public Task Process(CancellationToken stoppingToken)
     {
-        Console.WriteLine("Tick");
+        _logger.LogInformation("Tick");
         return Task.CompletedTask;
     }
 
-    public string Cron => "*/30 0 */1 * * *"; // Every 30 seconds, in the zero-th minute, every hour, https://github.com/HangfireIO/Cronos#usage
+    public string Cron => "* * * * * *"; // Every 30 seconds, in the zero-th minute, every hour, https://github.com/HangfireIO/Cronos#usage
 }
 
