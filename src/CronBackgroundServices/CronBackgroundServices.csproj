@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
         <RootNamespace>CronBackgroundServices</RootNamespace>
         <PackageId>CronBackgroundServices</PackageId>
         <Authors>John Korsnes</Authors>
@@ -16,26 +16,21 @@
         <PackageIconUrl>images/cron.png</PackageIconUrl>
         <PackageIcon>cron.png</PackageIcon>
         <RepositoryType>git</RepositoryType>
-        <DotNet6Version>6.0.0-preview.4.21253.7</DotNet6Version>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cronos" Version="0.7.0" />
+        <PackageReference Include="Cronos" Version="0.7.1" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(DotNet6Version)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(DotNet6Version)" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-*" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0-*" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
-    </ItemGroup>
-
-
 
     <ItemGroup>
         <None Include="images/cron.png" Pack="true" PackagePath="" />
