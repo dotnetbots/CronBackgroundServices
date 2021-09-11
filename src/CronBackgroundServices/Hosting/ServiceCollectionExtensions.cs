@@ -1,18 +1,25 @@
-using CronBackgroundServices;
-using CronBackgroundServices.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-// namespace on purpose:
-// ReSharper disable once CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection
+namespace CronBackgroundServices;
+
+public static class SlackbotWorkerBuilderExtensions
 {
-    public static class SlackbotWorkerBuilderExtensions
+    /// <summary>
+    /// For distributed apps
+    /// </summary>
+    public static IServiceCollection AddRecurrer<T>(this IServiceCollection services) where T : class, IRecurringAction
     {
-        /// <summary>
-        /// For distributed apps
-        /// </summary>
-        public static IRecurringActionsBuilder AddRecurringActions(this IServiceCollection services)
+        services.AddSingleton<IRecurringAction, T>();
+        services.AddSingleton<IHostedService>(s =>
         {
-            return new RecurringActionsBuilder(services);
-        }
+            var allRecurrers = s.GetServices<IRecurringAction>();
+            var single = allRecurrers.First(r => r is T);
+            var loggerFactory = s.GetService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<T>();
+            return new CronBackgroundService(single, logger);
+        });
+        return services;
     }
 }

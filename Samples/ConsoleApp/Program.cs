@@ -1,31 +1,32 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using CronBackgroundServices;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using CronBackgroundServices;
 
 Host.CreateDefaultBuilder(args)
-    .ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Trace))
-    .ConfigureServices((_, services) => services.AddRecurringActions().AddRecurrer<MyCustomRecurringJob>().Build())
+    .ConfigureServices(services => services
+        .AddRecurrer<EveryThreeSeconds>()
+        .AddRecurrer<EveryFiveSeconds>())
     .Build()
     .Run();
 
-public class MyCustomRecurringJob : IRecurringAction
+public class EveryFiveSeconds : IRecurringAction
 {
-    private readonly ILogger<MyCustomRecurringJob> _logger;
+    public string Cron => "*/5 * * * * *";
 
-    public MyCustomRecurringJob(ILogger<MyCustomRecurringJob> logger)
-    {
-        _logger = logger;
-    }
-    public Task Process(CancellationToken stoppingToken)
-    {
-        _logger.LogInformation("Tick");
-        return Task.CompletedTask;
-    }
-
-    public string Cron => "* * * * * *"; // Every 30 seconds, in the zero-th minute, every hour, https://github.com/HangfireIO/Cronos#usage
+    public Task Process(CancellationToken stoppingToken) => Logger.Log("🕔 Tick 5th second 5️⃣ 🖐");
 }
 
+public class EveryThreeSeconds : IRecurringAction
+{
+    public string Cron => "*/3 * * * * *";
+
+    public Task Process(CancellationToken stoppingToken) => Logger.Log("🕒 Tick 3rd second 3️⃣ 🥉");
+}
+
+static class Logger
+{
+    public static Task Log(string msg)
+    {
+        Console.WriteLine(msg);
+        return Task.CompletedTask;
+    }
+}

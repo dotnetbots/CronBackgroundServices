@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "*"
   pull_request:
     branches: [main]
 
@@ -10,23 +11,21 @@ jobs:
   ci-build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: "3.1.x"
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "5.0.x"
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "6.0.100-rc.2.21458.9"
           include-prerelease: true
+      - run: dotnet --info
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
       - name: Test
         run: dotnet test --no-build --verbosity normal
+      - name: PackTest
+        run: dotnet pack
