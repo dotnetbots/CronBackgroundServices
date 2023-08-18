@@ -1,5 +1,5 @@
 [![main](https://github.com/slackbot-net/CronBackgroundServices/workflows/CI/badge.svg)](https://github.com/slackbot-net/CronBackgroundServices/actions) [![NuGet](https://img.shields.io/nuget/v/CronBackgroundServices.svg)](https://www.nuget.org/packages/CronBackgroundServices/)
-[![NuGet](https://img.shields.io/nuget/vpre/CronBackgroundServices.svg)](https://www.nuget.org/packages/CronBackgroundServices/)
+
 
 ### CronBackgroundServices
 
