@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <RootNamespace>CronBackgroundServices</RootNamespace>
         <PackageId>CronBackgroundServices</PackageId>
         <Authors>John Korsnes</Authors>
         <Description>
             A .NET Core Background Service using Cron expressions as triggers
         </Description>
-
         <PackageTags>dotnetcore</PackageTags>
         <PackageProjectUrl>https://github.com/slackbot-net/slackbot.net</PackageProjectUrl>
         <License>https://github.com/slackbot-net/slackbot.net/blob/master/LICENSE</License>
@@ -24,16 +23,12 @@
         <PackageReference Include="Cronos" Version="0.7.1" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-*" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0-*" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-*" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-*" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
