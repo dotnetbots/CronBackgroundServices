@@ -4,10 +4,10 @@ using Microsoft.Extensions.Logging;
 
 namespace CronBackgroundServices;
 
-public static class SlackbotWorkerBuilderExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// For distributed apps
+    ///     For distributed apps
     /// </summary>
     public static IServiceCollection AddRecurrer<T>(this IServiceCollection services) where T : class, IRecurringAction
     {
@@ -16,7 +16,7 @@ public static class SlackbotWorkerBuilderExtensions
         {
             var allRecurrers = s.GetServices<IRecurringAction>();
             var single = allRecurrers.First(r => r is T);
-            var loggerFactory = s.GetService<ILoggerFactory>();
+            var loggerFactory = s.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<T>();
             return new CronBackgroundService(single, logger);
         });

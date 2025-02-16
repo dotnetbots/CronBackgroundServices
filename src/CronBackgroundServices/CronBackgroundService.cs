@@ -3,25 +3,16 @@ using Microsoft.Extensions.Logging;
 
 namespace CronBackgroundServices;
 
-internal class CronBackgroundService : BackgroundService
+internal class CronBackgroundService(IRecurringAction Action, ILogger logger) : BackgroundService
 {
-    protected readonly IRecurringAction Action;
-    private readonly ILogger _logger;
-    private readonly Timing _timing;
+    private readonly Timing _timing = new(Action.GetTimeZoneId());
 
-    public CronBackgroundService(IRecurringAction action, ILogger logger)
-    {
-        _timing = new Timing(action.GetTimeZoneId());
-        Action = action;
-        _logger = logger;
-        Cron = action.Cron;
-        _logger.LogTrace($"Using {Cron} and timezone '{_timing.TimeZoneInfo.Id}. The time in this timezone: {_timing.RelativeNow()}'");
-    }
-
-    private string Cron { get; }
+    private string Cron { get; } = Action.Cron;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        logger.LogTrace(
+            $"Using {Cron} and timezone '{_timing.TimeZoneInfo.Id}. The time in this timezone: {_timing.RelativeNow()}'");
         DateTimeOffset? next = null;
 
         do
@@ -33,7 +24,7 @@ internal class CronBackgroundService : BackgroundService
                 next = _timing.GetNextOccurenceInRelativeTime(Cron);
                 var uText = _timing.Get10NextOccurrences(Cron);
                 var logText = $"Ten next occurrences :\n{uText.Aggregate((x, y) => x + "\n" + y)}";
-                _logger.LogTrace(logText);
+                logger.LogTrace(logText);
             }
 
             if (now > next)
@@ -44,11 +35,13 @@ internal class CronBackgroundService : BackgroundService
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, e.Message);
+                    logger.LogError(e, e.Message);
                 }
 
                 next = _timing.GetNextOccurenceInRelativeTime(Cron);
-                _logger.LogTrace($"Next at {next.Value.DateTime.ToLongDateString()} {next.Value.DateTime.ToLongTimeString()}");
+                logger.LogTrace(next is not null
+                    ? $"Next at {next.Value.DateTime.ToLongDateString()} {next.Value.DateTime.ToLongTimeString()}"
+                    : "No more occurences.");
             }
             else
             {
@@ -57,7 +50,6 @@ internal class CronBackgroundService : BackgroundService
                 // cron occurence (lowest possible: every second)
                 await Task.Delay(100);
             }
-
         } while (!stoppingToken.IsCancellationRequested);
     }
 }
