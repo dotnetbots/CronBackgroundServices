@@ -1,18 +1,31 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace CronBackgroundServices;
 
-internal class CronBackgroundService(IRecurringAction Action, ILogger logger) : BackgroundService
+internal class CronBackgroundService<T> : BackgroundService where T : IRecurringAction
 {
-    private readonly Timing _timing = new(Action.GetTimeZoneId());
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger _logger;
+    private readonly Timing _timing;
+    private readonly string _cron;
 
-    private string Cron { get; } = Action.Cron;
+    public CronBackgroundService(IServiceScopeFactory scopeFactory, ILogger logger)
+    {
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+
+        using var scope = scopeFactory.CreateScope();
+        var action = scope.ServiceProvider.GetRequiredService<T>();
+        _cron = action.Cron;
+        _timing = new Timing(action.GetTimeZoneId());
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogTrace(
-            $"Using {Cron} and timezone '{_timing.TimeZoneInfo.Id}. The time in this timezone: {_timing.RelativeNow()}'");
+        _logger.LogTrace(
+            $"Using {_cron} and timezone '{_timing.TimeZoneInfo.Id}. The time in this timezone: {_timing.RelativeNow()}'");
         DateTimeOffset? next = null;
 
         do
@@ -21,25 +34,27 @@ internal class CronBackgroundService(IRecurringAction Action, ILogger logger) : 
 
             if (next == null)
             {
-                next = _timing.GetNextOccurenceInRelativeTime(Cron);
-                var uText = _timing.Get10NextOccurrences(Cron);
+                next = _timing.GetNextOccurenceInRelativeTime(_cron);
+                var uText = _timing.Get10NextOccurrences(_cron);
                 var logText = $"Ten next occurrences :\n{uText.Aggregate((x, y) => x + "\n" + y)}";
-                logger.LogTrace(logText);
+                _logger.LogTrace(logText);
             }
 
             if (now > next)
             {
                 try
                 {
-                    await Action.Process(stoppingToken);
+                    using var scope = _scopeFactory.CreateScope();
+                    var action = scope.ServiceProvider.GetRequiredService<T>();
+                    await action.Process(stoppingToken);
                 }
                 catch (Exception e)
                 {
-                    logger.LogError(e, e.Message);
+                    _logger.LogError(e, e.Message);
                 }
 
-                next = _timing.GetNextOccurenceInRelativeTime(Cron);
-                logger.LogTrace(next is not null
+                next = _timing.GetNextOccurenceInRelativeTime(_cron);
+                _logger.LogTrace(next is not null
                     ? $"Next at {next.Value.DateTime.ToLongDateString()} {next.Value.DateTime.ToLongTimeString()}"
                     : "No more occurences.");
             }
