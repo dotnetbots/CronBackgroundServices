@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
@@ -32,8 +35,13 @@ jobs:
           useConfigFile: true
       - name: Pack
         run: dotnet pack /p:Version=${{ steps.gitversion.outputs.majorMinorPatch }} /p:InformationalVersion=${{ steps.gitversion.outputs.informationalVersion }} /p:PackageReleaseNotes="https://github.com/$GITHUB_REPOSITORY/releases/tag/${{ steps.gitversion.outputs.majorMinorPatch }}" -o ./releases
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: ${{ secrets.NUGET_USER }}
       - name: Publish
-        run: dotnet nuget push ./releases/**/*.nupkg -k=${{ secrets.NUGETORGAPIKEY }} -s=nuget.org
+        run: dotnet nuget push ./releases/**/*.nupkg -k=${{ steps.nuget_login.outputs.NUGET_API_KEY }} -s=nuget.org
       - name: Generate CHANGELOG.md
         id: releasenotes
         run: |
