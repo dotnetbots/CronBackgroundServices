@@ -11,14 +11,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddRecurrer<T>(this IServiceCollection services) where T : class, IRecurringAction
     {
-        services.AddSingleton<IRecurringAction, T>();
+        services.AddScoped<T>();
         services.AddSingleton<IHostedService>(s =>
         {
-            var allRecurrers = s.GetServices<IRecurringAction>();
-            var single = allRecurrers.First(r => r is T);
+            var scopeFactory = s.GetRequiredService<IServiceScopeFactory>();
             var loggerFactory = s.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<T>();
-            return new CronBackgroundService(single, logger);
+            return new CronBackgroundService<T>(scopeFactory, logger);
         });
         return services;
     }
